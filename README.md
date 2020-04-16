@@ -9,4 +9,3 @@ ROS_NAMESPACE=/uav_cam_down/ rosrun image_proc image_proc
 roslaunch apriltags_ros example.launch
 
 rqt
-
