@@ -21,27 +21,27 @@ class OffbPosCtl:
 	bumperDetected = False
 	firstTag = False
 
-    x_cam = 0
-    y_cam = 0
+	x_cam = 0
+	y_cam = 0
 
-    def __init__(self):
-        rospy.init_node('offboard_test', anonymous=True)
-        pose_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
+	def __init__(self):
+		rospy.init_node('offboard_test', anonymous=True)
+		pose_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
 		vel_pub = rospy.Publisher('/mavros/setpoint_velocity/cmd_vel_unstamped', Twist, queue_size=10)
-        tag_pose = rospy.Subscriber('/tag_detections_pose', PoseArray, callback=self.tag_pose_cb)
-        mocap_sub = rospy.Subscriber('/mavros/local_position/pose', PoseStamped, callback=self.mocap_cb)
-        state_sub = rospy.Subscriber('/mavros/state', State, callback=self.state_cb)
+		tag_pose = rospy.Subscriber('/tag_detections_pose', PoseArray, callback=self.tag_pose_cb)
+		mocap_sub = rospy.Subscriber('/mavros/local_position/pose', PoseStamped, callback=self.mocap_cb)
+		state_sub = rospy.Subscriber('/mavros/state', State, callback=self.state_cb)
 		bumper_sub = rospy.Subscriber('/benchmarker/collision', ContactsState, callback=self.bumper_cb)
 
-        rate = rospy.Rate(5)  # Hz
-        rate.sleep()
-        self.des_pose = self.copy_pose(self.curr_pose)
+		rate = rospy.Rate(5)  # Hz
+		rate.sleep()
+		self.des_pose = self.copy_pose(self.curr_pose)
 
 		current_x = self.curr_pose.pose.position.x
 		current_y = self.curr_pose.pose.position.y
 		curr_z = self.curr_pose.pose.position.z
 
-	#New Addition Below	
+	#New Addition Below 
 		count = 0
 		isStart = False
 		grid = [[-3,-20],[-3,-3],[-20,-3],[-20,-20]]
@@ -141,15 +141,15 @@ class OffbPosCtl:
 					if curr_z >11.6 and curr_x > x-0.4 and curr_x < x+0.4 and curr_y > y-0.4 and curr_y < y+0.4 :
 						hover = True
 
-                self.des_pose.pose.position.x = des_x
-                self.des_pose.pose.position.y = des_y
-                self.des_pose.pose.position.z = des_z
+				self.des_pose.pose.position.x = des_x
+				self.des_pose.pose.position.y = des_y
+				self.des_pose.pose.position.z = des_z
 
-                curr_x = self.curr_pose.pose.position.x
-                curr_y = self.curr_pose.pose.position.y
-                curr_z = self.curr_pose.pose.position.z
+				curr_x = self.curr_pose.pose.position.x
+				curr_y = self.curr_pose.pose.position.y
+				curr_z = self.curr_pose.pose.position.z
 
-                dist = math.sqrt((curr_x - des_x)*(curr_x - des_x) + (curr_y - des_y)*(curr_y - des_y) + (curr_z - des_z)*(curr_z - des_z))
+				dist = math.sqrt((curr_x - des_x)*(curr_x - des_x) + (curr_y - des_y)*(curr_y - des_y) + (curr_z - des_z)*(curr_z - des_z))
 
 				print curr_x , curr_y , curr_z, "Current Pose"
 				if dist < distThreshold:
@@ -168,7 +168,7 @@ class OffbPosCtl:
 			rate.sleep()
 		
 
-    def tag_pose_cb(self,msg):
+	def tag_pose_cb(self,msg):
 		if msg.poses != []:
 			self.tagDetected = True
 			self.firstTag = True
@@ -178,26 +178,26 @@ class OffbPosCtl:
 			self.tagDetected = False
 
 #################DO NOT TOUCH BELOW #########################
-    def copy_pose(self, pose):
-        pt = pose.pose.position
-        quat = pose.pose.orientation
-        copied_pose = PoseStamped()
-        copied_pose.header.frame_id = pose.header.frame_id
-        copied_pose.pose.position = Point(pt.x, pt.y, pt.z)
-        copied_pose.pose.orientation = Quaternion(quat.x, quat.y, quat.z, quat.w)
-        return copied_pose
+	def copy_pose(self, pose):
+		pt = pose.pose.position
+		quat = pose.pose.orientation
+		copied_pose = PoseStamped()
+		copied_pose.header.frame_id = pose.header.frame_id
+		copied_pose.pose.position = Point(pt.x, pt.y, pt.z)
+		copied_pose.pose.orientation = Quaternion(quat.x, quat.y, quat.z, quat.w)
+		return copied_pose
 
-    def mocap_cb(self, msg):
-        # print msg
-        self.curr_pose = msg
+	def mocap_cb(self, msg):
+		# print msg
+		self.curr_pose = msg
 
-    def state_cb(self,msg):
-        print msg.mode
-        if(msg.mode=='OFFBOARD'):
-            self.isReadyToFly = True
-            print "readyToFly"
+	def state_cb(self,msg):
+		print msg.mode
+		if(msg.mode=='OFFBOARD'):
+			self.isReadyToFly = True
+			print "readyToFly"
 
-    def setDisarm(self):
+	def setDisarm(self):
 		rospy.wait_for_service('/mavros/cmd/arming')
 		try:
 				armService = rospy.ServiceProxy('/mavros/cmd/arming', mavros_msgs.srv.CommandBool)
@@ -205,7 +205,7 @@ class OffbPosCtl:
 		except rospy.ServiceException, e:
 				print "Service arm call failed: %s"%e
 
-    def setLandMode(self):
+	def setLandMode(self):
 		rospy.wait_for_service('/mavros/cmd/land')
 		try:
 				landService = rospy.ServiceProxy('/mavros/cmd/land', mavros_msgs.srv.CommandTOL)
@@ -214,10 +214,10 @@ class OffbPosCtl:
 		except rospy.ServiceException, e:
 				print "service land call failed: %s. The vehicle cannot land "%e
 
-    def bumper_cb(self,msg):
+	def bumper_cb(self,msg):
 		if msg.states != [] and self.firstTag:
 			self.bumperDetected = True
 
 
 if __name__ == "__main__":
-    OffbPosCtl()
+	OffbPosCtl()
