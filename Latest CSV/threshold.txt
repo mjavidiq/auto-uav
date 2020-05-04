@@ -1,0 +1,10 @@
+1 - 10 = 0.1
+11 - 15 = 0.05
+16 - 28 = 0.4
+23 = Not found
+25 = Quick
+
+Grid updated to (-3,-3) and (-40,-40)
+Threshold = 0.1
+30, 31 = Not found
+32 = Found
